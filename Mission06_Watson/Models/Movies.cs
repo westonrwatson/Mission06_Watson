@@ -1,34 +1,40 @@
 namespace Mission06_Watson.Models;
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 // Setting up the movie database
-
 public class Movie
 {
     [Key]
     public int MovieId { get; set; }
 
     [Required(ErrorMessage = "Title is required.")]
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty; // ✅ Prevent NULL Title
 
     [Required(ErrorMessage = "Category is required.")]
-    public string Category { get; set; }
+    public int CategoryId { get; set; }
+
+    [ForeignKey("CategoryId")]
+    public virtual Categories? Category { get; set; } 
 
     [Required(ErrorMessage = "Year is required.")]
     [Range(1888, 2100, ErrorMessage = "Enter a valid year.")]
-    public string Year { get; set; }
+    public int? Year { get; set; } // ✅ Allow NULL but enforce validation
 
-    [Required(ErrorMessage = "Director is required.")]
-    public string Director { get; set; }
+    public string? Director { get; set; } 
 
     [Required(ErrorMessage = "Rating is required.")]
-    public string Rating { get; set; }
+    public string Rating { get; set; } = "Not Rated"; 
 
-    public bool Edited { get; set; }
+    [Required]
+    public bool Edited { get; set; } = false; // ✅ Ensure non-null default
 
-    public string? LentTo { get; set; }
+    public string? LentTo { get; set; } 
 
     [MaxLength(25, ErrorMessage = "Notes cannot exceed 25 characters.")]
-    public string? Notes { get; set; }
+    public string? Notes { get; set; } 
+
+    [Required]
+    public bool CopiedToPlex { get; set; } = false; // ✅ Ensure non-null default
 }

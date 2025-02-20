@@ -1,26 +1,33 @@
-﻿<!-- Mission07 Updated -->
-
-@model IEnumerable<Mission06_Watson.Models.Movie>
+﻿@model IEnumerable<Mission06_Watson.Models.Movie>
 
 @{
     ViewData["Title"] = "The Joel Hilton Film Collection";
 }
 
-<h1>The Joel Hilton Film Collection</h1>
+<!-- Success Message -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Year</th>
-            <th>Director</th>
-            <th>Rating</th>
-            <th>Edited</th>
-            <th>Lent To</th>
-            <th>Notes</th>
-            <th>Actions</th>
-        </tr>
+<h1>The Joel Hilton Film Collection</h1>
+<img src="/joel.jpg" alt="Baconsale" width="400">
+<table class="table table-hover table-bordered">
+    <thead class="table-dark">
+    <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Year</th>
+        <th>Director</th>
+        <th>Rating</th>
+        <th>Edited</th>
+        <th>Lent To</th>
+        <th>Notes</th>
+        <th>Copied To Plex</th>
+        <th>Actions</th>
+    </tr>
     </thead>
     <tbody>
     @foreach (var movie in Model)
@@ -30,18 +37,24 @@
                 <span class="view-mode">@movie.Title</span>
                 <input type="text" name="Title" class="edit-mode form-control" value="@movie.Title" hidden>
             </td>
+
             <td>
-                <span class="view-mode">@movie.Category</span>
-                <input type="text" name="Category" class="edit-mode form-control" value="@movie.Category" hidden>
+                <span class="view-mode">@movie.Category?.CategoryName</span>
+                <select name="CategoryId" class="edit-mode form-control" asp-items="ViewBag.Categories" hidden>
+                    <option value="@movie.CategoryId">-- Select Category --</option>
+                </select>
             </td>
+
             <td>
-                <span class="view-mode">@movie.Year</span>
-                <input type="text" name="Year" class="edit-mode form-control" value="@movie.Year" hidden>
+                <span class="view-mode">@((movie.Year ?? 2000).ToString())</span>
+                <input type="number" name="Year" class="edit-mode form-control" value="@(movie.Year ?? 2000)" min="1888" max="2100" hidden>
             </td>
+
             <td>
                 <span class="view-mode">@movie.Director</span>
                 <input type="text" name="Director" class="edit-mode form-control" value="@movie.Director" hidden>
             </td>
+
             <td>
                 <span class="view-mode">@movie.Rating</span>
                 <select name="Rating" class="edit-mode form-control" hidden>
@@ -51,18 +64,27 @@
                     <option value="R" selected="@(movie.Rating == "R" ? "selected" : null)">R</option>
                 </select>
             </td>
-            <td>
-                <input type="checkbox" name="Edited" class="edit-mode" @(movie.Edited ? "checked" : "") hidden>
-                <span class="view-mode">@(movie.Edited ? "Yes" : "No")</span>
-            </td>
+
             <td>
                 <span class="view-mode">@movie.LentTo</span>
                 <input type="text" name="LentTo" class="edit-mode form-control" value="@movie.LentTo" hidden>
             </td>
+
             <td>
                 <span class="view-mode">@movie.Notes</span>
-                <input type="text" name="Notes" class="edit-mode form-control" value="@movie.Notes" hidden>
+                <input type="text" name="Notes" class="edit-mode form-control" value="@movie.Notes" maxlength="25" hidden>
             </td>
+
+            <td>
+                <span class="view-mode">@(movie.Edited ? "Yes" : "No")</span>
+                <input type="checkbox" name="Edited" class="edit-mode" @(movie.Edited ? "checked" : "") hidden>
+            </td>
+
+            <td>
+                <span class="view-mode">@(movie.CopiedToPlex ? "Yes" : "No")</span>
+                <input type="checkbox" name="CopiedToPlex" class="edit-mode" @(movie.CopiedToPlex ? "checked" : "") hidden>
+            </td>
+
             <td>
                 <button class="btn btn-warning btn-sm edit-btn">Edit</button>
                 <button class="btn btn-success btn-sm save-btn" data-id="@movie.MovieId" hidden>Save</button>
@@ -88,29 +110,20 @@
             var row = $(this).closest("tr");
             var movieId = $(this).data("id");
 
-            // Correctly fetch input values by name attribute
-            var titleValue = row.find("input[name='Title']").val().trim();
-            var categoryValue = row.find("input[name='Category']").val().trim();
-            var yearValue = row.find("input[name='Year']").val().trim();
-            var directorValue = row.find("input[name='Director']").val().trim();
-            var ratingValue = row.find("select[name='Rating']").val();
-            var editedValue = row.find("input[name='Edited']").is(":checked");  // Fix: Checkbox handling
-            var lentToValue = row.find("input[name='LentTo']").val()?.trim() || null;
-            var notesValue = row.find("input[name='Notes']").val()?.trim() || null;
-
             var updatedMovie = {
                 MovieId: movieId,
-                Title: titleValue,
-                Category: categoryValue,
-                Year: yearValue,
-                Director: directorValue,
-                Rating: ratingValue,
-                Edited: editedValue,
-                LentTo: lentToValue,
-                Notes: notesValue
+                Title: row.find("input[name='Title']").val().trim(),
+                CategoryId: row.find("select[name='CategoryId'] option:selected").val(), // ✅ Corrected dropdown selection
+                Year: parseInt(row.find("input[name='Year']").val().trim()) || 2000, // ✅ Ensures valid int
+                Director: row.find("input[name='Director']").val().trim(),
+                Rating: row.find("select[name='Rating']").val(),
+                Edited: row.find("input[name='Edited']").is(":checked"),
+                LentTo: row.find("input[name='LentTo']").val()?.trim() || null,
+                Notes: row.find("input[name='Notes']").val()?.trim() || null,
+                CopiedToPlex: row.find("input[name='CopiedToPlex']").is(":checked")
             };
 
-            console.log("Sending updated data:", updatedMovie); // Debugging output
+            console.log("Sending updated data:", updatedMovie);
 
             $.ajax({
                 url: '/Home/UpdateMovie',
@@ -118,7 +131,7 @@
                 contentType: 'application/json',
                 data: JSON.stringify(updatedMovie),
                 success: function () {
-                    location.reload(); // Refresh after successful update
+                    location.reload();
                 },
                 error: function (xhr, status, error) {
                     alert("Error updating movie: " + xhr.responseText);

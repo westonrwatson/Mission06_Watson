@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Mission06_Watson.Models;
 
 namespace Mission06_Watson.Controllers
@@ -14,27 +15,32 @@ namespace Mission06_Watson.Controllers
             _context = context;
         }
 
-        // Main Landing Page
+        // ✅ Main Landing Page
         public IActionResult Index()
         {
-            var movies = _context.Movies.ToList();
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "CategoryName"); // ✅ Ensure dropdown works
+            var movies = _context.Movies
+                .Include(m => m.Category) // ✅ Ensure Category names load
+                .ToList();
+
             return View(movies);
         }
-
-        // Get To Know Joel Page
+        
+        // ✅ Get To Know Joel Page
         public IActionResult GetToKnowJoel()
         {
             return View();
         }
 
-        // Add Movie Page (GET)
+        // ✅ Add Movie Page (GET)
         [HttpGet]
         public IActionResult AddMovie()
         {
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "CategoryName"); // ✅ Ensure dropdown is populated
             return View();
         }
 
-        // Add Movie (POST)
+        // ✅ Add Movie (POST)
         [HttpPost]
         public IActionResult AddMovie(Movie movie)
         {
@@ -42,15 +48,15 @@ namespace Mission06_Watson.Controllers
             {
                 _context.Add(movie);
                 _context.SaveChanges();
-
                 TempData["SuccessMessage"] = "Movie added successfully!";
-                return RedirectToAction("Index"); // Redirect to Index after adding
+                return RedirectToAction("Index");
             }
 
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "CategoryName");
             return View(movie);
         }
 
-        // Edit Movie (POST)
+        // ✅ Edit Movie (POST)
         [HttpPost]
         public IActionResult UpdateMovie([FromBody] Movie updatedMovie)
         {
@@ -60,14 +66,16 @@ namespace Mission06_Watson.Controllers
                 return NotFound();
             }
 
+            // ✅ Update all fields properly
             movie.Title = updatedMovie.Title;
-            movie.Category = updatedMovie.Category;
-            movie.Year = updatedMovie.Year;
+            movie.CategoryId = updatedMovie.CategoryId; // ✅ Assign CategoryId, not Category object
+            movie.Year = updatedMovie.Year ?? 2000; // ✅ Handle null years
             movie.Director = updatedMovie.Director;
             movie.Rating = updatedMovie.Rating;
-            movie.Edited = updatedMovie.Edited;
+            movie.Edited = updatedMovie.Edited; // ✅ Default to false if null
+            movie.CopiedToPlex = updatedMovie.CopiedToPlex; // ✅ Default to false if null
 
-            // Explicitly set null if input is empty
+            // ✅ Explicitly set null if input is empty
             movie.LentTo = string.IsNullOrWhiteSpace(updatedMovie.LentTo) ? null : updatedMovie.LentTo;
             movie.Notes = string.IsNullOrWhiteSpace(updatedMovie.Notes) ? null : updatedMovie.Notes;
 
@@ -75,7 +83,7 @@ namespace Mission06_Watson.Controllers
             return Ok();
         }
 
-        // Delete Movie (Post)
+        // ✅ Delete Movie (POST)
         [HttpPost]
         public IActionResult DeleteMovie(int id)
         {

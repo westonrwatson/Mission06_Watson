@@ -3,47 +3,46 @@
     ViewData["Title"] = "Add Movie";
 }
 
-<!-- Success Message -->
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
 <!-- Add Movie Form -->
 <h1>Add a New Movie</h1>
 
 <form asp-action="AddMovie" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div>
-        <label asp-for="Category"></label>
-        <input asp-for="Category" class="form-control" />
-        <span asp-validation-for="Category" class="text-danger"></span>
-    </div>
-
-    <div>
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
+    <!-- Title Input -->
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" required />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
 
-    <div>
-        <label asp-for="Year"></label>
-        <input asp-for="Year" class="form-control" />
+    <!-- Category Dropdown -->
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label"></label>
+        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories" required>
+            <option value="">-- Select Category --</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <!-- Year Input -->
+    <div class="mb-3">
+        <label asp-for="Year" class="form-label"></label>
+        <input asp-for="Year" type="number" class="form-control" min="1888" max="2100" required />
         <span asp-validation-for="Year" class="text-danger"></span>
     </div>
 
-    <div>
-        <label asp-for="Director"></label>
-        <input asp-for="Director" class="form-control" />
+    <!-- Director Input -->
+    <div class="mb-3">
+        <label asp-for="Director" class="form-label"></label>
+        <input asp-for="Director" class="form-control" required />
         <span asp-validation-for="Director" class="text-danger"></span>
     </div>
 
-    <div>
-        <label asp-for="Rating"></label>
-        <select asp-for="Rating" class="form-control">
+    <!-- Rating Dropdown -->
+    <div class="mb-3">
+        <label asp-for="Rating" class="form-label"></label>
+        <select asp-for="Rating" class="form-control" required>
             <option value="G">G</option>
             <option value="PG">PG</option>
             <option value="PG-13">PG-13</option>
@@ -52,23 +51,34 @@
         <span asp-validation-for="Rating" class="text-danger"></span>
     </div>
 
-    <div>
-        <label asp-for="Edited"></label>
-        <input asp-for="Edited" type="checkbox" />
+    <!-- Edited Checkbox -->
+    <div class="mb-3 form-check">
+        <input asp-for="Edited" type="checkbox" class="form-check-input" value="true" />
+        <input type="hidden" name="Edited" value="false" /> <!-- Ensures unchecked boxes send false -->
+        <label asp-for="Edited" class="form-check-label"></label>
     </div>
 
-    <div>
-        <label asp-for="LentTo"></label>
+    <!-- Copied to Plex Checkbox -->
+    <div class="mb-3 form-check">
+        <input asp-for="CopiedToPlex" type="checkbox" class="form-check-input" value="true" />
+        <input type="hidden" name="CopiedToPlex" value="false" /> <!-- Ensures unchecked boxes send false -->
+        <label asp-for="CopiedToPlex" class="form-check-label"></label>
+    </div>
+
+
+    <!-- Lent To Input -->
+    <div class="mb-3">
+        <label asp-for="LentTo" class="form-label"></label>
         <input asp-for="LentTo" class="form-control" />
         <span asp-validation-for="LentTo" class="text-danger"></span>
     </div>
 
-    <div>
-        <label asp-for="Notes"></label>
+    <!-- Notes Input -->
+    <div class="mb-3">
+        <label asp-for="Notes" class="form-label"></label>
         <input asp-for="Notes" class="form-control" maxlength="25" />
         <span asp-validation-for="Notes" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Add Movie</button>
 </form>
-
