@@ -1,9 +1,140 @@
-﻿@model IEnumerable<Mission06_Watson.Models.Movie>
+﻿<!-- Mission07 Updated -->
+
+@model IEnumerable<Mission06_Watson.Models.Movie>
 
 @{
     ViewData["Title"] = "The Joel Hilton Film Collection";
 }
 
-<!-- Main Landing Page -->
 <h1>The Joel Hilton Film Collection</h1>
-<img src="https://public.boxcloud.com/api/2.0/internal_files/908099177363/versions/978098006963/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!UlXwDCR_WT7WwdCaGco-B4qLwpSFR7SnKeWCvsnmD4PVRchHa5KW6HeVBNCnDlrHpuw5Pb5l44h8UjMxUMRdrbHW3Q2uWSbuiWzs_bgRxI1SC4Qgde_PyI3TYQxlfDbwChExUI_g5DGpvmbfcjrR2w0KPgCeqlql1aSI-WMfxDGRPi0XXF9Km3-yB5laZt8eKwK4dZzU11dTigng2hBx_KghQytejkR7_8PBE_A2krtiYA87L88Y4lIktj8UeZvBSlhilg1-GGmdCvIKwGQJSz1p0uEo3wNvAlqp73AEh2sp4knqSjgatDyqhNRPJr6KtTvMX3oPbtk1aONLpoNGgbmrNYAWWf5x2sFUm_UEDumcE0HE8fdYES-iZ94kVhDT5gEh-tyR6kU_o8XtFSjJqqsTgPZwVHHIgPgayQbDeOagSTV5e9mQ1W6V_WEGqIG7TGeI-DKirRXK1-iZGeMrrzGh4JYq9rRUqHqTBb4cZotERqivUFMqcDT-sQP4K-xfkQdynTPEU7Ra9xuDWIn9pWKCH3X6VMjXNU1k8yh1CO7u8V1N91AcrFXQyteaQ-6OKiMbCfakt7ST5kDAhOOlNiKzMvVvEKdPCG0sHg..&shared_link=https%3A%2F%2Fbyu.app.box.com%2Fs%2F8sjz2qei13h4nnlw0e6gc10ot35octkf&box_client_name=box-content-preview&box_client_version=3.0.0" alt="Joel Hilton" style="max-width: 100%; height: auto;">
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Year</th>
+            <th>Director</th>
+            <th>Rating</th>
+            <th>Edited</th>
+            <th>Lent To</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var movie in Model)
+    {
+        <tr id="row-@movie.MovieId">
+            <td>
+                <span class="view-mode">@movie.Title</span>
+                <input type="text" name="Title" class="edit-mode form-control" value="@movie.Title" hidden>
+            </td>
+            <td>
+                <span class="view-mode">@movie.Category</span>
+                <input type="text" name="Category" class="edit-mode form-control" value="@movie.Category" hidden>
+            </td>
+            <td>
+                <span class="view-mode">@movie.Year</span>
+                <input type="text" name="Year" class="edit-mode form-control" value="@movie.Year" hidden>
+            </td>
+            <td>
+                <span class="view-mode">@movie.Director</span>
+                <input type="text" name="Director" class="edit-mode form-control" value="@movie.Director" hidden>
+            </td>
+            <td>
+                <span class="view-mode">@movie.Rating</span>
+                <select name="Rating" class="edit-mode form-control" hidden>
+                    <option value="G" selected="@(movie.Rating == "G" ? "selected" : null)">G</option>
+                    <option value="PG" selected="@(movie.Rating == "PG" ? "selected" : null)">PG</option>
+                    <option value="PG-13" selected="@(movie.Rating == "PG-13" ? "selected" : null)">PG-13</option>
+                    <option value="R" selected="@(movie.Rating == "R" ? "selected" : null)">R</option>
+                </select>
+            </td>
+            <td>
+                <input type="checkbox" name="Edited" class="edit-mode" @(movie.Edited ? "checked" : "") hidden>
+                <span class="view-mode">@(movie.Edited ? "Yes" : "No")</span>
+            </td>
+            <td>
+                <span class="view-mode">@movie.LentTo</span>
+                <input type="text" name="LentTo" class="edit-mode form-control" value="@movie.LentTo" hidden>
+            </td>
+            <td>
+                <span class="view-mode">@movie.Notes</span>
+                <input type="text" name="Notes" class="edit-mode form-control" value="@movie.Notes" hidden>
+            </td>
+            <td>
+                <button class="btn btn-warning btn-sm edit-btn">Edit</button>
+                <button class="btn btn-success btn-sm save-btn" data-id="@movie.MovieId" hidden>Save</button>
+                <button class="btn btn-danger btn-sm delete-btn" data-id="@movie.MovieId">Delete</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".edit-btn").click(function () {
+            var row = $(this).closest("tr");
+            row.find(".view-mode").hide();
+            row.find(".edit-mode").prop("hidden", false);
+            row.find(".edit-btn").hide();
+            row.find(".save-btn").prop("hidden", false);
+        });
+
+        $(".save-btn").click(function () {
+            var row = $(this).closest("tr");
+            var movieId = $(this).data("id");
+
+            // Correctly fetch input values by name attribute
+            var titleValue = row.find("input[name='Title']").val().trim();
+            var categoryValue = row.find("input[name='Category']").val().trim();
+            var yearValue = row.find("input[name='Year']").val().trim();
+            var directorValue = row.find("input[name='Director']").val().trim();
+            var ratingValue = row.find("select[name='Rating']").val();
+            var editedValue = row.find("input[name='Edited']").is(":checked");  // Fix: Checkbox handling
+            var lentToValue = row.find("input[name='LentTo']").val()?.trim() || null;
+            var notesValue = row.find("input[name='Notes']").val()?.trim() || null;
+
+            var updatedMovie = {
+                MovieId: movieId,
+                Title: titleValue,
+                Category: categoryValue,
+                Year: yearValue,
+                Director: directorValue,
+                Rating: ratingValue,
+                Edited: editedValue,
+                LentTo: lentToValue,
+                Notes: notesValue
+            };
+
+            console.log("Sending updated data:", updatedMovie); // Debugging output
+
+            $.ajax({
+                url: '/Home/UpdateMovie',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(updatedMovie),
+                success: function () {
+                    location.reload(); // Refresh after successful update
+                },
+                error: function (xhr, status, error) {
+                    alert("Error updating movie: " + xhr.responseText);
+                }
+            });
+        });
+
+        $(".delete-btn").click(function () {
+            var movieId = $(this).data("id");
+            if (confirm("Are you sure you want to delete this movie?")) {
+                $.post('/Home/DeleteMovie', { id: movieId }, function () {
+                    location.reload();
+                }).fail(function () {
+                    alert("Error deleting movie.");
+                });
+            }
+        });
+    });
+</script>
