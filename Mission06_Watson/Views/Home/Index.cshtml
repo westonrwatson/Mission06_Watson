@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Mission06_Watson.Models.Movie>
+﻿<!-- Weston Watson, Section 3 -->
+
+@model IEnumerable<Mission06_Watson.Models.Movie>
 
 @{
     ViewData["Title"] = "The Joel Hilton Film Collection";
@@ -12,8 +14,11 @@
     </div>
 }
 
+<!-- Retained from previous Mission 6 -->
 <h1>The Joel Hilton Film Collection</h1>
 <img src="/joel.jpg" alt="Baconsale" width="400">
+
+<!-- New Table to display Movies + Bootstrap theme-->
 <table class="table table-hover table-bordered">
     <thead class="table-dark">
     <tr>
@@ -95,6 +100,7 @@
     </tbody>
 </table>
 
+<!-- JS to help reduce pages and allow for editting on the index page -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {

@@ -3,15 +3,17 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 
-[Table("Categories")] // ✅ Matches SQLite table name
+// Set up to Match the new Categories Table
+
+[Table("Categories")] // Matches SQLite table name
 public class Categories
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // ✅ Auto-incremented primary key
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int CategoryId { get; set; }
 
     [Required]
-    public string CategoryName { get; set; } = string.Empty; // ✅ Matches `TEXT NOT NULL`
+    public string CategoryName { get; set; } = string.Empty; 
 
-    public virtual ICollection<Movie>? Movies { get; set; } // ✅ FK reference in Movies table
+    public virtual ICollection<Movie>? Movies { get; set; }
 }

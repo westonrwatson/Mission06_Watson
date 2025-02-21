@@ -10,7 +10,7 @@ public class Movie
     public int MovieId { get; set; }
 
     [Required(ErrorMessage = "Title is required.")]
-    public string Title { get; set; } = string.Empty; // ✅ Prevent NULL Title
+    public string Title { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Category is required.")]
     public int CategoryId { get; set; }
@@ -20,7 +20,7 @@ public class Movie
 
     [Required(ErrorMessage = "Year is required.")]
     [Range(1888, 2100, ErrorMessage = "Enter a valid year.")]
-    public int? Year { get; set; } // ✅ Allow NULL but enforce validation
+    public int? Year { get; set; } 
 
     public string? Director { get; set; } 
 
@@ -28,7 +28,7 @@ public class Movie
     public string Rating { get; set; } = "Not Rated"; 
 
     [Required]
-    public bool Edited { get; set; } = false; // ✅ Ensure non-null default
+    public bool Edited { get; set; } = false;
 
     public string? LentTo { get; set; } 
 
@@ -36,5 +36,5 @@ public class Movie
     public string? Notes { get; set; } 
 
     [Required]
-    public bool CopiedToPlex { get; set; } = false; // ✅ Ensure non-null default
+    public bool CopiedToPlex { get; set; } = false;
 }

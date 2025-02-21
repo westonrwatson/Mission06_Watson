@@ -15,6 +15,6 @@ public class MovieContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // ❌ REMOVE SEED DATA (to prevent errors)
+        // REMOVED SEED DATA (to prevent errors)
     }
 }
